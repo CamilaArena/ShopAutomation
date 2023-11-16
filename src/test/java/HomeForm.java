@@ -67,8 +67,6 @@ public class HomeForm extends PageObject{
         logInButton.click();
     }
 
-    public String getWelcomeContent(){
-        return welcomeSign.getText();
-    }
+    public String getWelcomeContent(){return welcomeSign.getText();}
 
 }

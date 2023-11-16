@@ -49,6 +49,7 @@ public class LoginTest {
         homeForm.clickSignIn();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         homeForm.enterSignInUsername(username);
+        System.out.println(username);
         homeForm.enterSignInPassword(password);
         homeForm.clickSignUp();
         Assert.assertTrue(switchToAlert().getText().contains("Sign up successful."));
@@ -71,8 +72,9 @@ public class LoginTest {
         homeForm.enterLogInUsername(username);
         homeForm.enterLogInPassword(password);
         homeForm.clickLogInButton();
-       // driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        //Assert.assertEquals(homeForm.getWelcomeContent(), "Welcome "+username);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        System.out.println("contenido: "+homeForm.getWelcomeContent());
+        Assert.assertEquals(homeForm.getWelcomeContent(), "Welcome "+username);
     }
 
     @Test(testName = "Unsuccessful log in with inexisting username")
@@ -95,7 +97,8 @@ public class LoginTest {
         HomeForm homeForm = new HomeForm(driver);
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         homeForm.clickLogIn();
-        homeForm.enterLogInUsername(username);
+        homeForm.enterLogInUsername(username); //me toma otro usuario, idk why
+        System.out.println(username);
         homeForm.enterLogInPassword(wrongPassw);
         homeForm.clickLogInButton();
         System.out.println(switchToAlert().getText());
