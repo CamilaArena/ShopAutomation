@@ -28,6 +28,10 @@ public class HomeForm extends PageObject{
     @FindBy(xpath = "//*[@id=\"signInModal\"]/div/div/div[3]/button[2]")
     private WebElement signUpButton;
 
+    @FindBy(xpath = "//*[@id=\"logInModal\"]/div/div/div[3]/button[2]")
+    private WebElement logInButton;
+
+
     @FindBy(id="nameofuser")
     private WebElement welcomeSign;
 
@@ -57,6 +61,10 @@ public class HomeForm extends PageObject{
 
     public void clickSignUp(){
         signUpButton.click();
+    }
+
+    public void clickLogInButton(){
+        logInButton.click();
     }
 
     public String getWelcomeContent(){
