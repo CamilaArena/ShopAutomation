@@ -8,26 +8,18 @@ import org.testng.Assert;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import static services.randoms.generateRandomPassword;
+import static services.randoms.generateRandomUsername;
 
 public class LoginTest {
     public static final WebDriver driver = new ChromeDriver();
     private static final String username = generateRandomUsername();
     private static final String password = generateRandomPassword();
 
-    private static String generateRandomUsername() {
-        return "user_" + UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    private static String generateRandomPassword() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
-        StringBuilder password = new StringBuilder();
-        for (int i = 0; i < 12; i++) {
-            int index = (int) (Math.random() * characters.length());
-            password.append(characters.charAt(index));
-        }
-        return password.toString();
+    @BeforeSuite
+    public static void main (String[]args){
+        System.setProperty("webdriver.chrome.driver", Utils.CHROME_DRIVER_LOCATION);
     }
 
     private static Alert switchToAlert(){
@@ -36,20 +28,19 @@ public class LoginTest {
         return driver.switchTo().alert();
     }
 
-    @BeforeSuite
-    public static void main (String[]args){
-        System.setProperty("webdriver.chrome.driver", Utils.CHROME_DRIVER_LOCATION);
+    private static HomeForm init(){
+        driver.get(Utils.BASE_URL);
+        HomeForm homeForm = new HomeForm(driver);
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        return homeForm;
     }
 
     @Test(testName = "Successful sign up")
     public static void successfulSignIn() {
-        driver.get(Utils.BASE_URL);
-        HomeForm homeForm = new HomeForm(driver);
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        HomeForm homeForm = init();
         homeForm.clickSignIn();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         homeForm.enterSignInUsername(username);
-        System.out.println(username);
         homeForm.enterSignInPassword(password);
         homeForm.clickSignUp();
         Assert.assertTrue(switchToAlert().getText().contains("Sign up successful."));
@@ -64,9 +55,7 @@ public class LoginTest {
 
     @Test(testName = "Successful log in")
     public static void successfulLogIn() {
-        driver.get(Utils.BASE_URL);
-        HomeForm homeForm = new HomeForm(driver);
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        HomeForm homeForm = init();
         homeForm.clickLogIn();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         homeForm.enterLogInUsername(username);
@@ -74,15 +63,13 @@ public class LoginTest {
         homeForm.clickLogInButton();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         System.out.println("contenido: "+homeForm.getWelcomeContent());
-        Assert.assertEquals(homeForm.getWelcomeContent(), "Welcome "+username);
+        Assert.assertEquals(homeForm.getWelcomeContent(), "Welcome "+username); //doesn't  work, it's always empty
     }
 
     @Test(testName = "Unsuccessful log in with inexisting username")
     public static void unsuccessfulLogInInexistingUser() {
-        driver.get(Utils.BASE_URL);
         String wrongUser = generateRandomUsername();
-        HomeForm homeForm = new HomeForm(driver);
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        HomeForm homeForm = init();
         homeForm.clickLogIn();
         homeForm.enterLogInUsername(wrongUser);
         homeForm.enterLogInPassword(password);
@@ -92,10 +79,8 @@ public class LoginTest {
 
     @Test(testName = "Unsuccessful log in with incorrect password")
     public static void unsuccessfulLogInWrongPassword() {
-        driver.get(Utils.BASE_URL);
+        HomeForm homeForm = init();
         String wrongPassw = generateRandomPassword();
-        HomeForm homeForm = new HomeForm(driver);
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         homeForm.clickLogIn();
         homeForm.enterLogInUsername(username); //me toma otro usuario, idk why
         System.out.println(username);
@@ -108,7 +93,6 @@ public class LoginTest {
     @AfterSuite
     public void cleanUp(){
         try {
-            // Manejar alertas antes de realizar acciones de limpieza
             Alert alert = driver.switchTo().alert();
             if (alert != null) {
                 alert.dismiss();
